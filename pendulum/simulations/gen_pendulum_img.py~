@@ -1,0 +1,53 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Coordinate system
+#   .---> x
+#   |
+# y v
+
+def polar_to_cart(piv_x, piv_y, rad, ang):
+    x = piv_x + rad * np.sin(ang)
+    y = piv_y + rad * np.cos(ang)
+    return x, y
+
+
+
+if __name__ == '__main__':
+    height = 120  # Height of the image in pixels
+    width = 120   # Width of the image in pixels
+    conver = 50   # Meters*conver = pixels
+    
+    l = 1 # length of the pendulum (m)
+    piv_x = (width/2)/conver   # pivot x coord (m)
+    piv_y = 0.2                # pivot y coord (m)
+    
+    theta = []
+    with open('sim_output.dat', 'r') as ifile:
+        for line in ifile:
+            v = list(map(float, line.split()))
+            theta.append(v[1])
+    c_coords = [polar_to_cart(piv_x,piv_y,l,a) for a in theta]
+
+    
+    for n in range(0,101,1):
+        mat = np.zeros((height, width))
+        pix_x = int(round(c_coords[n][0]*conver))
+        pix_y = int(round(c_coords[n][1]*conver))
+        
+        # Generate gaussian around pendulum position
+        gauss_rad = 5
+        xx, yy = np.meshgrid(np.linspace(-gauss_rad,gauss_rad,2*gauss_rad), 
+                             np.linspace(-gauss_rad,gauss_rad,2*gauss_rad)) 
+        d = np.sqrt(xx**2+yy**2)
+        sigma = 1.5
+        gauss = np.exp(-(d**2/(2*sigma**2)))
+        
+        for i in range(gauss.shape[0]):
+            for j in range(gauss.shape[1]):
+                mat[i+pix_y,j+pix_x] = gauss[i,j]
+        
+        plt.imshow(mat,cmap='grey')
+        plt.savefig('images/img_{0:05d}.png'.format(n))
+
+    
