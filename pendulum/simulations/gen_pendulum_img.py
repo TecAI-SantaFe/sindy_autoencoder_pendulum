@@ -27,6 +27,7 @@ if __name__ == '__main__':
     data = np.empty([len(seeds),t,len(x),len(y)],dtype=np.float32)
     data2 = np.empty([len(seeds),t,len(x),len(y)],dtype=np.float32)
     data3 = np.empty([len(seeds),t,len(x),len(y)],dtype=np.float32)
+    label = np.empty([len(seeds),t],dtype=np.float32)
     
     for idx in range(len(seeds)):
         theta = []
@@ -40,7 +41,10 @@ if __name__ == '__main__':
         temp = []
         temp_d = []
         temp_dd = []
+        lab = []
         for n in range(0,t,1):
+            lab.append(theta[n])
+            
             #print(idx,n)
             mat = np.zeros((height, width))
             mat_d = np.zeros((height, width))
@@ -79,8 +83,9 @@ if __name__ == '__main__':
         data[idx] = np.array(temp)
         data2[idx] = np.array(temp_d)
         data3[idx] = np.array(temp_dd)
+        label[idx] = np.array(lab)
 
-        print(data[idx].shape,data2[idx].shape,data3[idx].shape)
+        print(label[idx].shape,data[idx].shape,data2[idx].shape,data3[idx].shape)
 
     with open('X.npy', 'wb') as f:
         np.save(f,data)
@@ -91,4 +96,7 @@ if __name__ == '__main__':
     with open('Xddot.npy', 'wb') as f:
         np.save(f,data3)
     del data3
+    with open('Y.npy', 'wb') as f:
+        np.save(f,label)
+    del label
     
