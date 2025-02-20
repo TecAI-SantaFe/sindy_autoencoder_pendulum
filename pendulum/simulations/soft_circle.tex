@@ -1,0 +1,118 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsfonts,bm}
+\usepackage{graphics,graphicx}
+%\documentclass[pre,showpacs]{revtex4-1}
+%\documentclass[pre,twocolumn,showpacs]{revtex4}
+%\documentclass[12pt]{article}
+%\usepackage[english]{babel}
+%\usepackage{amsmath,amssymb,amsfonts}
+%\usepackage[dvips]{graphicx}
+\usepackage{amsmath}
+\usepackage{color}
+%\usepackage{fancyhdr}
+%\usepackage{showlabels}
+\usepackage{tikz}
+
+\newcommand{\D}[1]{\frac{\partial}{\partial{#1}}}
+\newcommand{\Dd}[2]{\frac{\partial{#1}}{\partial{#2}}}
+\newcommand{\then}{\Rightarrow}
+\newcommand{\deriv}[1]{\frac{d}{d{#1}}}
+\newcommand{\derivd}[2]{\frac{d{#1}}{d{#2}}}
+\newcommand{\derivdd}[2]{\frac{d^2{#1}}{d{#2}^2}}
+
+
+%%%%%%%%%%tikz                                                                  
+\newcommand{\ancho}{1.2}                                                        
+\newcommand{\rad}{1.4}                                                          
+\newcommand{\dbit}{0.56}
+
+\tikzstyle{rect}=[text width=\ancho cm,                                         
+  rectangle,fill=blue!70!red!10!white,align=left,text=black,font=\bfseries]    
+\tikzstyle{white}=[fill=white,align=center,text depth=0.3ex,rectangle,
+  text=black,font=\bfseries] 
+
+
+\begin{document}
+
+\title{Using a soft circle to represent the location of the pendulum mass}
+\author{Carlos E. \'Alvarez}
+%\date{}
+\maketitle
+
+\section{Soft circle function}
+The soft circle function centered at $c$ is defined as the product of two sigmoid functions:
+\begin{align}
+  f(x)&=\left(\frac{1}{1+e^{-A((x-c)+R)}}\right)\left(\frac{1}{1+e^{A((x-c)-R)}}\right)\nonumber\\
+  &=\frac{1}{1+e^{-2AR}+2e^{-AR}\cosh(A(x-c))},
+  \label{softc}
+\end{align}
+where $A$ controls the decay of the rim of the circle, and $R$ the radius of the circle.\\
+
+\section{Soft circle as pendulum mass}
+In 2D, to represent the pendulum mass as a soft circle we realize that the center of the pendulum is located at
+\begin{align}
+  \vec{r}=(r_x,r_y)=(p_x+l\sin\theta,p_y+l\cos\theta),
+\end{align}
+where $(p_x,p_y)$ is the location of the pivot of the pendulum, $l$ is the length of the pendulum, and $\theta$ is the angle the pendulum makes with the vertical. Which means we have to compute function (\ref{softc}) as a function of the radial distance $d$ from $\vec{r}$, instead of $c$. That is
+\begin{align}
+  D = \sqrt{(x-p_x-l\sin\theta)^2+(y-p_y-l\cos\theta)^2}.
+\end{align}
+Then
+\begin{align}
+  f(D) = \frac{1}{a+b\cosh(AD)},
+\end{align}
+where
+\begin{align}
+  a &= 1+e^{-2AR}\\
+  b &= 2e^{-AR}.
+\end{align}
+
+The angle $\theta$ is a function of time, and we want to compute the first and second time derivatives of $f$ with respect to time.
+
+\subsection{1st derivative}
+\begin{align}
+  \frac{df}{dt}=\frac{df}{dD}\frac{dD}{d\theta}\dot{\theta}.
+\end{align}
+
+\begin{align}
+  \frac{df}{dD}=-\frac{bA\sinh(AD)}{\left[a+b\cosh(AD)\right]^2}=-bA\sinh(AD)f(D)^2.
+\end{align}
+
+\begin{align}
+  \frac{dD}{d\theta}=-\frac{l}{D}[(y-p_y)\sin\theta-(x-p_x)\cos\theta].
+\end{align}
+
+Then
+\begin{align}
+  \dot{f}(D)=\frac{df}{dt}=\frac{lbA}{D}f(D)^2\sinh(AD)[(x-p_x)\cos\theta-(y-p_y)\sin\theta]\dot{\theta}
+\end{align}
+
+\subsection{2nd derivative}
+\begin{align}
+  \frac{d^2f}{dt^2}=&lbA\frac{d}{dt}\left[\frac{1}{D}\right]f(D)^2\sinh(AD)[(y-p_y)\sin\theta-(x-p_x)\cos\theta)]\dot{\theta}\nonumber\\
+  &+lbA\frac{1}{D}\frac{d}{dt}\left[f(D)^2\right]\sinh(AD)[(y-p_y)\sin\theta-(x-p_x)\cos\theta)]\dot{\theta}\nonumber\\
+  &+lbA\frac{1}{D}f(D)^2\frac{d}{dt}\left[\sinh(AD)\right][(y-p_y)\sin\theta-(x-p_x)\cos\theta)]\dot{\theta}\nonumber\\
+  &+lbA\frac{1}{D}f(D)^2\sinh(AD)\frac{d}{dt}\left[(y-p_y)\sin\theta-(x-p_x)\cos\theta)\right]\dot{\theta}\nonumber\\
+  &+lbA\frac{1}{D}f(D)^2\sinh(AD)\left[(y-p_y)\sin\theta-(x-p_x)\cos\theta)\right]\ddot{\theta}\nonumber\\
+  =&\frac{l^2bA}{D^3}f(D)^2\sinh(AD)[(y-p_y)\sin\theta-(x-p_x)\cos\theta]^2\dot{\theta}^2\nonumber\\
+  &+2\frac{lbA}{D}f(D)\dot{f}(D)\sinh(AD)[(y-p_y)\sin\theta-(x-p_x)\cos\theta]\dot{\theta}\nonumber\\
+  &-\frac{lbA^2}{D}f(D)^2\cosh(AD)[(y-p_y)\cos\theta+(x-p_x)\sin\theta][(y-p_y)\sin\theta-(x-p_x)\cos\theta]\dot{\theta}^2\nonumber\\
+  &-\frac{lbA}{D}f(D)^2\sinh(AD)\left[(y-p_y)\cos\theta+(x-p_x)\sin\theta\right]\dot{\theta}^2\nonumber\\
+  &+\frac{lbA}{D}f(D)^2\sinh(AD)\left[(y-p_y)\sin\theta-(x-p_x)\cos\theta\right]\ddot{\theta}\nonumber\\
+  =&\dot{f}(D)\left[\frac{l}{D^2}\dot{\theta}+2\frac{\dot{f}(D)}{f(D)}-\frac{\sin\theta}{\dot{\theta}}\right.\nonumber\\
+    &\left.-\left(\frac{A}{\tanh(AD)}+\frac{1}{[(y-p_y)\sin\theta-(x-p_x)\cos\theta)]}\right)\left[(y-p_y)\cos\theta+(x-p_x)\sin\theta\right]\dot{\theta}\right],
+\end{align}
+where we have used that, for a pendulum with $l=g$
+\begin{align}
+  \ddot{\theta}=-\sin\theta.
+\end{align}
+
+Numerically, it is better to avoid dividing by $\dot{\theta}$ or $f(D)$, so
+\begin{align}
+  \ddot{f}=&\frac{lbA}{D}f(D)\sinh(AD)[(x-p_x)\cos\theta-(y-p_y)\sin\theta]\nonumber\\
+  &\times\left[\frac{l}{D^2}f(D)\dot{\theta}^2+2\dot{f}(D)-f(D)\sin\theta\right.\nonumber\\
+  &\left.-\left(\frac{A}{\tanh(AD)}+\frac{1}{[(y-p_y)\sin\theta-(x-p_x)\cos\theta)]}\right)\left[(y-p_y)\cos\theta+(x-p_x)\sin\theta\right]f(D)\dot{\theta}^2\right]\right]
+\end{align}
+
+\end{document}
