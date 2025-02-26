@@ -13,6 +13,7 @@ if __name__ == '__main__':
     #seed = int(argv[1])
     seeds = [i for i in range(0,301,5)] #Seeds of the simulations
     t = 500                             #Time steps of the simulations
+    tstep = 1
     
     height = 51  # Height of the image in pixels
     width = 51   # Width of the image in pixels
@@ -24,10 +25,10 @@ if __name__ == '__main__':
 
     x = np.linspace(0,width,width)
     y = np.linspace(0,height,height)
-    data = np.empty([len(seeds),t,len(x),len(y)],dtype=np.float32)
-    data2 = np.empty([len(seeds),t,len(x),len(y)],dtype=np.float32)
-    data3 = np.empty([len(seeds),t,len(x),len(y)],dtype=np.float32)
-    label = np.empty([len(seeds),t],dtype=np.float32)
+    data = np.empty([len(seeds),int(t/tstep),len(x),len(y)],dtype=np.float32)
+    data2 = np.empty([len(seeds),int(t/tstep),len(x),len(y)],dtype=np.float32)
+    data3 = np.empty([len(seeds),int(t/tstep),len(x),len(y)],dtype=np.float32)
+    label = np.empty([len(seeds),int(t/tstep)],dtype=np.float32)
     
     for idx in range(len(seeds)):
         theta = []
@@ -42,7 +43,7 @@ if __name__ == '__main__':
         temp_d = []
         temp_dd = []
         lab = []
-        for n in range(0,t,1):
+        for n in range(0,t,tstep):
             lab.append(theta[n])
             
             #print(idx,n)
